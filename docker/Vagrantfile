@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+
+Vagrant.configure('2') do |config|
+  config.vm.box = 'docker'
+  config.vm.box_url = 'https://copy.com/3oo4wigdp3Kf'
+
+  config.vm.provider :vmware_fusion do |v|
+    v.vmx['memsize'] = 256
+    v.vmx['numcpus'] = 2
+  end
+end
