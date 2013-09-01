@@ -1,0 +1,55 @@
+{
+    "builders":[{
+        "type": "vmware",
+        "guest_os_type": "ubuntu-64",
+        "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'",
+        "vmx_data": {
+            "memsize": "512",
+            "numvcpus": "1",
+            "cpuid.coresPerSocket": "1"
+        },
+        "iso_url": "http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-amd64.iso",
+        "iso_checksum": "2cbe868812a871242cdcdd8f2fd6feb9",
+        "iso_checksum_type": "md5",
+        "ssh_username": "vagrant",
+        "ssh_password": "vagrant",
+        "ssh_wait_timeout": "1200s",
+        "http_directory": "./",
+        "tools_upload_flavor": "linux",
+        "tools_upload_path": "/var/tmp/{{.Flavor}}.iso.",
+        "boot_wait": "10s",
+        "boot_command":[
+            "<esc></esc><esc><enter><wait>",
+            "/install/vmlinuz noapic ",
+            "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+            "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+            "hostname={{ .Name }} ",
+            "fb=false debconf/frontend=noninteractive ",
+            "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+            "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+            "initrd=/install/initrd.gz -- ",
+            "<enter><wait>"
+        ]
+    }],
+    "provisioners":[{
+        "type": "shell",
+        "scripts":[
+            "scripts/base.sh",
+            "scripts/vagrant.sh",
+            "scripts/vmware-tools.sh",
+            "scripts/cleanup.sh"
+        ],
+        "override": {
+            "vmware": {
+                "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'"
+            }
+        }
+    }
+    ],
+    "post-processors": [
+        {
+            "type": "vagrant",
+            "output": "./ubuntu-12.04.3-server-amd64-docker-vmware.box"
+        }
+    ]
+}
